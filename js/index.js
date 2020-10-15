@@ -1,3 +1,7 @@
+var editor;
+var machine = ""; //machine code
+var lc = 0; //location counter
+
 const keywords = [
 	'LOAD',
 	'STORE',
@@ -60,7 +64,8 @@ CodeMirror.defineMode('assembler', function () {
 		},
 	};
 });
-var editor;
+
+//initialisation of editor window object
 $(document).ready(function () {
 	const code = $('.codemirror-textarea')[0];
 	editor = CodeMirror.fromTextArea(code, {
@@ -74,42 +79,80 @@ $(document).ready(function () {
 	$("#translate-button").on("click",assemble);
 });
 
-var machine = "";
-
+//wrapper fn called at assemble, splits assembly code by ';' into array, makes instruction 
 function assemble() {
     machine = "";
     const assembly = editor.getValue();
-   //  document.querySelector(".machine textarea").innerHTML;
     const assemblyArr = assembly.split(";");
 
-    for(var i = 0; i < assemblyArr.length; i++) {
+    //seperate code into instructions, clean up spaces and stuff
+    for(var i = 0; i < assemblyArr.length - 1; i++) {
         assemblyArr[i] = assemblyArr[i].replace("\n", "");
-        var instruction = assemblyArr[i].split(" ");
-        console.log(instruction);
-        if (instruction[0].includes("LOAD") || instruction[0].includes("STORE")) {
-            regmem(instruction); continue;
+        assemblyArr[i] = assemblyArr[i].replace(",", " ");
+        while(assemblyArr[i].includes("  ")) {
+            assemblyArr[i] = assemblyArr[i].replace("  ", " ");
         }
-        else if (instruction[0].includes("JMPZ") || instruction[0].includes("JMPN") || instruction[0].includes("JMPU") || instruction[0].includes("CALL")) {
-            nullmem(instruction); continue;
-        }
-        else if (instruction[0].includes("ADD") || instruction[0].includes("INC") || instruction[0].includes("MOV") || instruction[0].includes("AND") || instruction[0].includes("OR") || instruction[0].includes("NOT") || instruction[0].includes("XOR")) {
-            regreg(instruction);continue;
-        }
-        else if (instruction[0].includes("CILR") || instruction[0].includes("CILL") || instruction[0].includes("SHR") || instruction[0].includes("SHL")) {
-            nullreg(instruction); continue;
-        }
-        else if (instruction[0].includes("RET") || instruction[0].includes("CINT") || instruction[0].includes("CMIF") || instruction[0].includes("INPT") || instruction[0].includes("OUTP") || instruction[0].includes("CINF") || instruction[0].includes("COUF")){
-            nullnull(instruction);continue;
-        }
+        assemblyArr[i] = assemblyArr[i].toUpperCase();
+        
     }
 
-    document.querySelector(".machine textarea").innerHTML = machine;
+    //remove last empty element
+    assemblyArr.pop()
+    console.log(assemblyArr);
+
+    //seperate instruction into tokens and call appropriate function
+    for(var i = 0; i < assemblyArr.length; i++) {
+        
+        var instruction = assemblyArr[i].split(" ");
+        if(instruction[0] === "") {
+            instruction.shift();
+        }
+        if(instruction[instruction.length - 1] === "") {
+            instruction.pop();
+        }
+        //changing location counter value depending on control transfer commands
+        if (instruction[0].includes("ORG")) {
+            instruction[1] = instruction[1].replace("H", "");
+            lc = parseInt(instruction[1], 16);
+            console.log(lc);
+        }
+        else if (instruction[0].includes("LOAD") || instruction[0].includes("STORE")) {
+            regmem(instruction); lc += 1; continue;
+        }
+        else if (instruction[0].includes("JMPZ") || instruction[0].includes("JMPN") || instruction[0].includes("JMPU") || instruction[0].includes("CALL")) {
+            nullmem(instruction); lc += 1; continue;
+        }
+        else if (instruction[0].includes("ADD") || instruction[0].includes("INC") || instruction[0].includes("MOV") || instruction[0].includes("AND") || instruction[0].includes("OR") || instruction[0].includes("NOT") || instruction[0].includes("XOR")) {
+            regreg(instruction); lc += 1; continue;
+        }
+        else if (instruction[0].includes("CILR") || instruction[0].includes("CILL") || instruction[0].includes("SHR") || instruction[0].includes("SHL")) {
+            nullreg(instruction); lc += 1; continue;
+        }
+        else if (instruction[0].includes("RET") || instruction[0].includes("CINT") || instruction[0].includes("CMIF") || instruction[0].includes("INPT") || instruction[0].includes("OUTP") || instruction[0].includes("CINF") || instruction[0].includes("COUF")){
+            nullnull(instruction); lc += 1; continue;
+        }
+    }
+    $(".machine textarea").html(machine);
+    // document.querySelector(".machine textarea").innerHTML = machine;
 }
 
+//instruction has one register and one memory operand
+//memory reference
 function regmem(instruction) {
+    var mode = "01";
+    if (instruction[2][0] === "[" && instruction[2][instruction[2].length - 1] === "]") {
+        mode = "10";
+        instruction[2] = instruction[2].replace("[", "");
+        instruction[2] = instruction[2].replace("]", "");
+    }
+    else if (instruction[2][0] === "$") {
+        mode = "11";
+        instruction[2] = instruction[2].replace("$", "");
+    }
+
     switch(instruction[0]) {
-        case "LOAD": machine += "XX 0000  "; break;
-        case "STORE": machine += "XX 0001  "; break;
+        case "LOAD": machine += mode + " 0000  "; break;
+        case "STORE": machine += mode + " 0001  "; break;
     }
 
     switch(instruction[1]) {
@@ -118,27 +161,31 @@ function regmem(instruction) {
         case "C": machine += "10  "; break;
         case "D": machine += "11  "; break;
     }
-
-    machine += parseInt(instruction[2]).toString(2);
-
+    instruction[2].replace("H", "");
+	 //converts memory address into binary
+    machine += parseInt(instruction[2], 16).toString(2);
     machine += "\n";
 }
 
+//instruction has one memory(label) operand
+//control transfer
 function nullmem(instruction) {
     switch(instruction[0]) {
-        case "JMPZ": machine += "XX 0010  "; break;
-        case "JMPN": machine += "XX 0011  "; break;
-        case "JMPU": machine += "XX 0100  "; break;
-        case "CALL": machine += "XX 0101  "; break;
+        case "JMPZ": machine += "01 0010  "; break;
+        case "JMPN": machine += "01 0011  "; break;
+        case "JMPU": machine += "01 0100  "; break;
+        case "CALL": machine += "01 0101  "; break;
     }
-
+    instruction[1].replace("H", "");
+    
     machine += "00  ";
-
-    machine += parseInt(instruction[1]).toString(2);
-
+    //converts memory address into binary
+    machine += parseInt(instruction[1], 16).toString(2);
     machine += "\n";
 }
 
+//instruction has two register operands
+//arithmetic and logical
 function regreg(instruction) {
     switch(instruction[0]) {
         case "ADD": machine += "0000 0000 0001  "; break;
@@ -161,10 +208,11 @@ function regreg(instruction) {
         case "C": machine += "10"; break;
         case "D": machine += "11"; break;
     }
-
     machine += "\n";
 }
 
+//instruction has one register operand
+//shift instructions
 function nullreg(instruction) {
     switch(instruction[0]) {
         case "CILR": machine += "0000 0000 1000  "; break;
@@ -172,7 +220,6 @@ function nullreg(instruction) {
         case "SHR": machine += "0000 0000 1010  "; break;
         case "SHL": machine += "0000 0000 1011  "; break;
     }
-
     machine += "00  ";
 
     switch(instruction[1]) {
@@ -181,10 +228,11 @@ function nullreg(instruction) {
         case "C": machine += "10"; break;
         case "D": machine += "11"; break;
     }
-
     machine += "\n";
 }
 
+//instruction has no operands
+//flag control/io
 function nullnull(instruction) {
     switch(instruction[0]) {
         case "RET": machine += "0000 0000 1100  "; break;
@@ -195,10 +243,7 @@ function nullnull(instruction) {
         case "CINF": machine += "0000 0010 0000  "; break;
         case "COUF": machine += "0000 0011 0000  "; break;
     }
-
     machine += "00  ";
-
     machine += "00";
-    
     machine += "\n";
 }
