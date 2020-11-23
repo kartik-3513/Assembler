@@ -78,18 +78,21 @@
 			</nav>
 		</header>
 
-		<form id="editor-form">
-			<div class="form-element input">
-				<textarea class="codemirror-textarea editor"></textarea>
+		<main>
+			<form id="editor-form">
+				<div class="form-element input">
+					<h3 id="assemblyCodeTitle">Assembly Code</h3>
+					<textarea class="codemirror-textarea editor"></textarea>
+				</div>
+				<div class="form-element button-div">
+					<button id="translate-button" type="button">Translate</button>
+				</div>
+			</form>
+			<div class="machine">
+				<h3 id="machineCodeTitle">Machine Code</h3>
+				<textarea id="machine" readonly> </textarea>
 			</div>
-			<div class="form-element button-div">
-				<button id="translate-button" type="button">Translate</button>
-			</div>
-		</form>
-		<div class="machine">
-			<h3 id="machineCodeTitle">Machine Code</h3>
-			<textarea id="machine" readonly> </textarea>
-		</div>
+		</main>
 
 		<footer>
 			<div class="footer-text">
