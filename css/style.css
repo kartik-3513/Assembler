@@ -58,12 +58,11 @@ ul.nav-list {
 }
 
 #editor-form {
-	margin-bottom: 2rem;
+	margin-bottom: 1rem;
 }
 
 .form-element {
-	margin: 1.3rem;
-	padding: 0.67rem;
+	margin: 1rem;
 }
 
 .button-div {
@@ -90,13 +89,14 @@ ul.nav-list {
 }
 
 .machine {
-	margin: 2rem;
+	margin: 1rem;
 	display: grid;
 	grid-template-rows: auto auto;
 	justify-content: center;
 }
 
-#machineCodeTitle {
+#machineCodeTitle,
+#assemblyCodeTitle {
 	text-align: center;
 }
 
