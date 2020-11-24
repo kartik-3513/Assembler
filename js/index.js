@@ -35,8 +35,8 @@ const keywords = [
 ];
 const keys_regmem = ['LOAD', 'STORE'];
 const keys_nullmem = ['JMPZ', 'JMPN', 'JMPU', 'CALL'];
-const keys_regreg = ['ADD', 'MOV', 'AND', 'OR', 'NOT', 'XOR'];
-const keys_nullreg = ['INC', 'CILR', 'CILL', 'SHR', 'SHL'];
+const keys_regreg = ['ADD', 'MOV', 'AND', 'OR', 'XOR'];
+const keys_nullreg = ['NOT', 'INC', 'CILR', 'CILL', 'SHR', 'SHL'];
 const keys_registers = ['A', 'B', 'C', 'D'];
 const keys_nullnull = ['RET', 'CINT', 'CMIF', 'INPT', 'OUTP', 'CINF', 'COUF'];
 
@@ -124,6 +124,10 @@ function assemble() {
 
 		if (error) {
 			$('.machine textarea').html(error);
+			const scrollDestination = document.getElementById('machine-container');
+			scrollDestination.scrollIntoView({
+				behavior: 'smooth',
+			});
 			return;
 		}
 
@@ -168,13 +172,13 @@ function assemble() {
 					instruction[0] === 'MOV' ||
 					instruction[0] === 'AND' ||
 					instruction[0] === 'OR' ||
-					instruction[0] === 'NOT' ||
 					instruction[0] === 'XOR'
 				) {
 					regreg(instruction);
 					//console.log(lc);
 					continue;
 				} else if (
+					instruction[0] === 'NOT' ||
 					instruction[0] === 'INC' ||
 					instruction[0] === 'CILR' ||
 					instruction[0] === 'CILL' ||
@@ -220,6 +224,10 @@ function assemble() {
 	}
 	passNumber = 1;
 	$('.machine textarea').html(machine);
+	const scrollDestination = document.getElementById('machine-container');
+	scrollDestination.scrollIntoView({
+		behavior: 'smooth',
+	});
 }
 
 //instruction has one register and one memory operand [memory reference]
@@ -310,11 +318,8 @@ function regreg(instruction) {
 		case 'OR':
 			machine += '0000 0000 0100 ';
 			break;
-		case 'NOT':
-			machine += '0000 0000 0101 ';
-			break;
 		case 'XOR':
-			machine += '0000 0000 0110 ';
+			machine += '0000 0000 0101 ';
 			break;
 	}
 	switch (instruction[1]) {
@@ -348,9 +353,12 @@ function regreg(instruction) {
 	machine += '\n';
 }
 
-//instruction has one register operand [shift instructions]
+//instruction has one register operand
 function nullreg(instruction) {
 	switch (instruction[0]) {
+		case 'NOT':
+			machine += '0000 0000 0110 ';
+			break;
 		case 'INC':
 			machine += '0000 0000 0111 ';
 			break;
