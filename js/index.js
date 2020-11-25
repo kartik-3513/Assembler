@@ -70,8 +70,8 @@ CodeMirror.defineMode('assembler', function () {
 			if (stream.match('og', true, true)) return 'keyword';
 			if (stream.match('label', true, true)) return 'keyword';
 			if (stream.match('val', true, true)) return 'keyword';
-			if (stream.match(/([0-9]H?|[A-F]H)/, true)) return 'variable';
-			if (stream.match(/\s[A-D]/, true, true)) return 'atom';
+			// if (stream.match(/([0-9]H?|[A-F]H)/, true)) return 'variable';
+			// if (stream.match(/\s[A-D]/, true, true)) return 'atom';
 
 			stream.next();
 			return null;
@@ -155,9 +155,13 @@ function assemble() {
 					lc = parseInt(instruction[1], 16);
 					continue;
 					//console.log(lc);
-				} else if (instruction[0] === 'LABEL' || instruction[0] === 'VAL') {
+				} else if (instruction[0] === 'LABEL') {
+					locationDictionary[instruction[1]] = lc;
+				} else if (instruction[0] === 'VAL') {
 					locationDictionary[instruction[1]] = lc++;
 					continue;
+				} else {
+					lc += 1;
 				}
 			}
 			if (passNumber === 2) {
@@ -175,7 +179,6 @@ function assemble() {
 					instruction[0] === 'XOR'
 				) {
 					regreg(instruction);
-					//console.log(lc);
 					continue;
 				} else if (
 					instruction[0] === 'NOT' ||
@@ -186,7 +189,6 @@ function assemble() {
 					instruction[0] === 'SHL'
 				) {
 					nullreg(instruction);
-					//console.log(lc);
 					continue;
 				} else if (
 					instruction[0] === 'RET' ||
@@ -198,14 +200,12 @@ function assemble() {
 					instruction[0] === 'COUF'
 				) {
 					nullnull(instruction);
-					//console.log(lc);
 					continue;
 				} else if (
 					instruction[0] === 'LOAD' ||
 					instruction[0] === 'STORE'
 				) {
 					regmem(instruction);
-					//console.log(lc);
 					continue;
 				} else if (
 					instruction[0] === 'JMPZ' ||
@@ -214,11 +214,9 @@ function assemble() {
 					instruction[0] === 'CALL'
 				) {
 					nullmem(instruction);
-					//console.log(lc);
 					continue;
 				}
 			}
-			lc += 1;
 		}
 		++passNumber;
 	}
@@ -273,7 +271,8 @@ function regmem(instruction) {
 	if (locationDictionary[instruction[2]] !== undefined) {
 		machine += numToBinary(locationDictionary[instruction[2]]);
 	} else {
-		instruction[2].replace('H', '');
+		instruction[2] = instruction[2].replace('H', '');
+		instruction[2] = parseInt(instruction[2], 16).toString();
 		machine += numToBinary(instruction[2]);
 	}
 	machine += '\n';
@@ -324,29 +323,23 @@ function regreg(instruction) {
 	}
 	switch (instruction[1]) {
 		case 'A':
-			machine += '00';
-			break;
-		case 'B':
 			machine += '01';
 			break;
-		case 'C':
+		case 'B':
 			machine += '10';
 			break;
-		case 'D':
+		case 'C':
 			machine += '11';
 			break;
 	}
 	switch (instruction[2]) {
 		case 'A':
-			machine += '00';
-			break;
-		case 'B':
 			machine += '01';
 			break;
-		case 'C':
+		case 'B':
 			machine += '10';
 			break;
-		case 'D':
+		case 'C':
 			machine += '11';
 			break;
 	}
@@ -465,33 +458,43 @@ function validator(assemblyArr) {
 				error += `${i + 1}: Memory location or variable name expected.`;
 				break;
 			}
-			//instruction[2] = instruction[2].replace('H', '');
+			let directIndirect = false;
+			//direct addressing
 			if (
 				instruction[2][0] === '[' &&
 				instruction[2][instruction[2].length - 1] === ']'
 			) {
+				directIndirect = true;
 				instruction[2] = instruction[2].replace('[', '');
 				instruction[2] = instruction[2].replace(']', '');
 			}
+
 			//Indirect addressing
 			else if (instruction[2][0] === '$') {
+				directIndirect = true;
 				instruction[2] = instruction[2].replace('$', '');
 			}
 			let num = parseInt(instruction[2], 16);
 
 			if (
-				num.toString(16) === instruction[2].toLowerCase() &&
-				(num < 0 || num > 255)
+				num.toString(16) ===
+				instruction[2].slice(0, instruction[2].length - 1).toLowerCase()
 			) {
-				error += `${i + 1}: Memory reference out of bound.`;
-				break;
+				if (directIndirect && (num < 0 || num > 255)) {
+					error += `${i + 1}: Memory reference out of bound.`;
+					break;
+				}
+				if (!directIndirect && (num < 0 || num > 65535)) {
+					error += `${i + 1}: Immediate value out of bound.`;
+					break;
+				}
 			}
-			// console.log(
-			// 	parseInt(instruction[2], 16),
-			// 	locationDictionary[instruction[2]]
-			// );
+
 			if (
-				!(num.toString(16) === instruction[2].toLowerCase()) &&
+				!(
+					num.toString(16) ===
+					instruction[2].slice(0, instruction[2].length - 1).toLowerCase()
+				) &&
 				locationDictionary[instruction[2]] === undefined
 			) {
 				error += `${i + 1}: Unrecognized variable ${instruction[2]}`;
