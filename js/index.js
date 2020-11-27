@@ -1,3 +1,4 @@
+var activeNav = false;
 var editor;
 var machine = ''; //machine code
 var lc = 0; //location counter
@@ -81,6 +82,7 @@ CodeMirror.defineMode('assembler', function () {
 
 //initialisation of editor window object
 $(document).ready(function () {
+	$('#hamburger').on('click', toggleActive);
 	const code = $('.codemirror-textarea')[0];
 	editor = CodeMirror.fromTextArea(code, {
 		lineNumbers: true,
@@ -92,6 +94,15 @@ $(document).ready(function () {
 	});
 	$('#translate-button').on('click', assemble);
 });
+
+function toggleActive() {
+	activeNav = !activeNav;
+	if (activeNav) {
+		$('#nav-ul').removeClass('active');
+	} else {
+		$('#nav-ul').addClass('active');
+	}
+}
 
 //wrapper fn called at assemble, splits assembly code by ';' into array, makes instruction
 function cleaner(assemblyArr) {
@@ -114,6 +125,7 @@ function cleaner(assemblyArr) {
 
 function assemble() {
 	lc = 0;
+	locationDictionary = {};
 	let assembly = editor.getValue();
 	let assemblyArr = assembly.split(';');
 	assemblyArr.forEach((token) => token.trim());

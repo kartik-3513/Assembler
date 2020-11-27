@@ -79,14 +79,14 @@ main {
 }
 
 .cards {
-	display: grid;
-	grid-template-columns: auto auto auto;
+	display: flex;
+	flex-wrap: wrap;
 	justify-content: space-around;
-	grid-gap: 0.5rem;
 }
 
 .card {
 	padding: 1rem;
+	margin: 1rem;
 	display: flex;
 	flex-direction: column;
 	border: 3px solid;

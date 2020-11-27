@@ -31,8 +31,8 @@
 	</head>
 
 	<body>
-		<header class="row">
-			<nav class="nav-bar col-12">
+		<header>
+			<nav class="nav-bar">
 				<div class="nav-logo">
 					<a href="./index.html">
 						<svg
@@ -71,32 +71,30 @@
 					</a>
 					<h1>Assembler</h1>
 				</div>
-				<ul class="nav-list">
+				<ul class="nav-list" id="nav-ul">
 					<li class="nav-link"><a href="./index.html">Home</a></li>
-					<li class="nav-link"><a target="_blank" href="./docs.pdf">Docs</a></li>
+					<li class="nav-link">
+						<a target="_blank" href="./docs.pdf">Docs</a>
+					</li>
 					<li class="nav-link"><a href="./creators.html">Creators</a></li>
 				</ul>
+				<i class="fa fa-bars" id="hamburger"></i>
 			</nav>
 		</header>
 
 		<main>
-			<div class="row">
-				<div class="col-6">
-					<form id="editor-form">
-						<h3 id="assemblyCodeTitle">Assembly Code</h3>
-						<textarea class="codemirror-textarea editor"></textarea>
-					</form>
-				</div>
+			<form id="editor-form">
+				<h3 id="assemblyCodeTitle">Assembly Code</h3>
+				<textarea class="codemirror-textarea editor"></textarea>
+			</form>
 
-				<div class="machine col-6" id="machine-container">
-					<h3 id="machineCodeTitle">Machine Code</h3>
-					<textarea id="machine" readonly> </textarea>	
-				</div>
+			<div class="machine" id="machine-container">
+				<h3 id="machineCodeTitle">Machine Code</h3>
+				<textarea id="machine" readonly> </textarea>
+			</div>
 
-				<div class="button-div col-12">
-					<button id="translate-button" type="button">Translate</button>
-				</div>
-
+			<div class="button-div">
+				<button id="translate-button" type="button">Translate</button>
 			</div>
 		</main>
 
@@ -104,18 +102,19 @@
 			<div class="footer-text">
 				<h3>Computer Architecture & Organization</h3>
 				<h4>Semester Project Work</h4>
-				<h6>Netaji Subhas University of Technology, Dwarka, Delhi</h6>
-				<!-- <h6>Dwarka, Delhi</h6> -->
+				<h6>Netaji Subhas University of Technology</h6>
+				<h6>Dwarka, Delhi</h6>
 			</div>
 			<div class="footer-icons">
 				<a
 					id="githubLink"
 					href="https://github.com/kartik-3513/final_cao_assembler"
+					target="_blank"
 					><i class="fa fa-github fa-footer" aria-hidden="true"></i
 				></a>
 			</div>
 		</footer>
-		
+
 		<script
 			src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
 			integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
