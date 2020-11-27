@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Document</title>
+		<title>Assembler</title>
 		<link
 			rel="stylesheet"
 			type="text/css"
@@ -71,28 +71,30 @@
 					</a>
 					<h1>Assembler</h1>
 				</div>
-				<ul class="nav-list">
+				<ul class="nav-list" id="nav-ul">
+					<li class="nav-link"><a href="./index.html">Home</a></li>
 					<li class="nav-link">
 						<a target="_blank" href="./docs.pdf">Docs</a>
 					</li>
 					<li class="nav-link"><a href="./creators.html">Creators</a></li>
 				</ul>
+				<i class="fa fa-bars" id="hamburger"></i>
 			</nav>
 		</header>
 
 		<main>
 			<form id="editor-form">
-				<div class="form-element input">
-					<h3 id="assemblyCodeTitle">Assembly Code</h3>
-					<textarea class="codemirror-textarea editor"></textarea>
-				</div>
-				<div class="form-element button-div">
-					<button id="translate-button" type="button">Translate</button>
-				</div>
+				<h3 id="assemblyCodeTitle">Assembly Code</h3>
+				<textarea class="codemirror-textarea editor"></textarea>
 			</form>
+
 			<div class="machine" id="machine-container">
 				<h3 id="machineCodeTitle">Machine Code</h3>
 				<textarea id="machine" readonly> </textarea>
+			</div>
+
+			<div class="button-div">
+				<button id="translate-button" type="button">Translate</button>
 			</div>
 		</main>
 
@@ -107,10 +109,12 @@
 				<a
 					id="githubLink"
 					href="https://github.com/kartik-3513/final_cao_assembler"
+					target="_blank"
 					><i class="fa fa-github fa-footer" aria-hidden="true"></i
 				></a>
 			</div>
 		</footer>
+
 		<script
 			src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
 			integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
