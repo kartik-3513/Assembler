@@ -1,4 +1,4 @@
-var activeNav = false;
+var activeNav = true;
 var editor;
 var machine = ''; //machine code
 var lc = 0; //location counter

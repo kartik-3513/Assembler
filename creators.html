@@ -51,15 +51,17 @@
 					</a>
 					<h1>Assembler</h1>
 				</div>
-				<ul class="nav-list">
+				<ul class="nav-list" id="nav-ul">
 					<li class="nav-link"><a href="./index.html">Home</a></li>
 					<li class="nav-link">
 						<a target="_blank" href="./docs.pdf">Docs</a>
 					</li>
 					<li class="nav-link"><a href="./creators.html">Creators</a></li>
 				</ul>
+				<i class="fa fa-bars" id="hamburger"></i>
 			</nav>
 		</header>
+
 		<main>
 			<p id="description">
 				Created as a submission for an academic project in the subject of
@@ -146,5 +148,16 @@
 			</div>
 		</footer>
 		<script src="https://use.fontawesome.com/98255e2a29.js"></script>
+		<script>
+			var activeNav = true;
+			document.getElementById('hamburger').addEventListener('click', () => {
+				activeNav = !activeNav;
+				if (activeNav) {
+					document.getElementById("nav-ul").classList.remove('active');
+				} else {
+					document.getElementById("nav-ul").classList.add('active');
+				}
+			})
+		</script>
 	</body>
 </html>
