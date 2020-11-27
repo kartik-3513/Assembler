@@ -31,8 +31,8 @@
 	</head>
 
 	<body>
-		<header>
-			<nav class="nav-bar">
+		<header class="row">
+			<nav class="nav-bar col-12">
 				<div class="nav-logo">
 					<a href="./index.html">
 						<svg
@@ -72,36 +72,38 @@
 					<h1>Assembler</h1>
 				</div>
 				<ul class="nav-list">
-					<li class="nav-link">
-						<a target="_blank" href="./docs.pdf">Docs</a>
-					</li>
+					<li class="nav-link"><a href="./index.html">Home</a></li>
+					<li class="nav-link"><a target="_blank" href="./docs.pdf">Docs</a></li>
 					<li class="nav-link"><a href="./creators.html">Creators</a></li>
 				</ul>
 			</nav>
 		</header>
 
 		<main>
-			<form id="editor-form">
-				<div class="form-element input">
-					<h3 id="assemblyCodeTitle">Assembly Code</h3>
-					<textarea class="codemirror-textarea editor"></textarea>
+			<div class="row">
+				<div class="col-6">
+					<form id="editor-form">
+						<h3 id="assemblyCodeTitle">Assembly Code</h3>
+						<textarea class="codemirror-textarea editor"></textarea>
+					</form>
 				</div>
-				<div class="form-element button-div">
+				<div class="machine col-6">
+						<h3 id="machineCodeTitle">Machine Code</h3>
+						<textarea id="machine" readonly> </textarea>	
+				</div>	
+			</div>
+
+				<div class="button-div">
 					<button id="translate-button" type="button">Translate</button>
 				</div>
-			</form>
-			<div class="machine" id="machine-container">
-				<h3 id="machineCodeTitle">Machine Code</h3>
-				<textarea id="machine" readonly> </textarea>
-			</div>
 		</main>
 
 		<footer>
 			<div class="footer-text">
 				<h3>Computer Architecture & Organization</h3>
 				<h4>Semester Project Work</h4>
-				<h6>Netaji Subhas University of Technology</h6>
-				<h6>Dwarka, Delhi</h6>
+				<h6>Netaji Subhas University of Technology, Dwarka, Delhi</h6>
+				<!-- <h6>Dwarka, Delhi</h6> -->
 			</div>
 			<div class="footer-icons">
 				<a
@@ -111,6 +113,7 @@
 				></a>
 			</div>
 		</footer>
+		
 		<script
 			src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
 			integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="

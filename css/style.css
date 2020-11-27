@@ -1,3 +1,36 @@
+/* For mobile phones: */
+@media only screen and (max-width: 600px) {
+	[class*="col-"] {
+		width: 100%;
+	}	
+}
+
+@media only screen and (min-width: 600px) {
+  /* For desktop: */
+  .col-1 {width: 8.33%;}
+  .col-2 {width: 16.66%;}
+  .col-3 {width: 25%;}
+  .col-4 {width: 33.33%;}
+  .col-5 {width: 41.66%;}
+  .col-6 {width: 50%;}
+  .col-7 {width: 58.33%;}
+  .col-8 {width: 66.66%;}
+  .col-9 {width: 75%;}
+  .col-10 {width: 83.33%;}
+  .col-11 {width: 91.66%;}
+  .col-12 {width: 100%;}
+}
+
+[class*="col-"] {
+	float: left;
+}
+
+.row::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
 body {
 	margin: 0;
 	padding: 0;
@@ -5,17 +38,18 @@ body {
 	font-size: 15px;
 	font-family: 'Roboto', sans-serif;
 }
+/*---------------------------------------------------------------*/
 
 header {
 	background-color: #9cdaf8;
 	background-image: linear-gradient(315deg, #9cdaf8 0%, #98fcbd 74%);
 }
+
 .nav-bar {
 	display: flex;
 	width: 100%;
-	height: 100px;
+	height: 5rem;
 	box-shadow: 0 15px 20px -10px darkgrey;
-	margin-bottom: 3rem;
 }
 
 .nav-logo {
@@ -25,11 +59,17 @@ header {
 	align-items: center;
 }
 
-.nav-logo h1,
+.nav-logo h1 {
+	margin: 0 0.5rem;
+	text-decoration: none;
+	color: black;
+}
+
 .nav-logo svg {
 	margin: 0 0.5rem;
 	text-decoration: none;
 	color: black;
+	width: 3.5rem;
 }
 
 ul.nav-list {
@@ -39,6 +79,7 @@ ul.nav-list {
 	list-style-type: none;
 	display: flex;
 	justify-content: flex-end;
+	align-items: center;
 }
 
 .nav-link {
@@ -56,17 +97,32 @@ ul.nav-list {
 	display: block;
 	height: 100%;
 	font-size: 1.2rem;
-	line-height: 100px;
+	line-height: 80px;
 	text-decoration: none;
 	color: #000;
 }
+/*---------------------------------------------------------------*/
 
-#editor-form {
-	margin-bottom: 1rem;
+main {
+	margin: 3rem 0 2rem;
+	padding: 1rem;
 }
 
-.form-element {
-	margin: 1rem;
+main>.row {
+	margin: 0 0 1rem 0;
+}
+
+#editor-form {
+	padding: 0 1rem;
+}
+
+.CodeMirror {
+	height: 25rem;
+}
+
+.CodeMirror * {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size: 20px;
 }
 
 .button-div {
@@ -93,26 +149,27 @@ ul.nav-list {
 }
 
 .machine {
-	margin: 1rem;
 	display: grid;
 	grid-template-rows: auto auto;
-	justify-content: center;
+	padding: 0 1rem;
+	box-sizing: border-box;
+	margin-bottom: 1rem;
 }
 
-#machineCodeTitle,
-#assemblyCodeTitle {
+#machineCodeTitle, #assemblyCodeTitle {
 	text-align: center;
 }
 
 #machine {
+	box-sizing: border-box;
 	background-color: rgb(46, 46, 46);
-	height: 35rem;
-	width: 50vw;
+	height: 25rem;
+	width: 100%;
 	color: white;
 	font-family: 'Source Code Pro', monospace;
 	font-size: 1.2rem;
-	padding: 1rem;
 }
+/*---------------------------------------------------------------*/
 
 footer {
 	background-color: rgb(0, 0, 0);
@@ -122,14 +179,12 @@ footer {
 }
 
 .footer-text {
-	padding-left: 1.2rem;
-	width: 50%;
+	padding: 0.5rem 1.2rem;
+	width: 70%;
 	font-size: 1.2rem;
 }
 
-.footer-text h3,
-h4,
-h6 {
+.footer-text h3, h4, h6 {
 	font-family: 'Roboto', sans-serif;
 	margin: 0.5rem;
 	font-weight: 200;
@@ -160,12 +215,4 @@ h6 {
 	font-size: 3rem !important;
 	margin: 1rem;
 }
-
-.CodeMirror {
-	height: 60vh;
-}
-
-.CodeMirror * {
-	font-family: 'Noto Sans JP', sans-serif;
-	font-size: 20px;
-}
+/*---------------------------------------------------------------*/
