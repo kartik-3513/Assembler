@@ -34,12 +34,47 @@ const keywords = [
 	'VAL',
 	'LABEL',
 ];
+
 const keys_regmem = ['LOAD', 'STORE'];
 const keys_nullmem = ['JMPZ', 'JMPN', 'JMPU', 'CALL'];
 const keys_regreg = ['ADD', 'MOV', 'AND', 'OR', 'XOR'];
 const keys_nullreg = ['NOT', 'INC', 'CILR', 'CILL', 'SHR', 'SHL'];
 const keys_registers = ['A', 'B', 'C', 'D'];
 const keys_nullnull = ['RET', 'CINT', 'CMIF', 'INPT', 'OUTP', 'CINF', 'COUF'];
+
+const opcode_regmem = { LOAD: '00 00', STORE: '00 01' };
+const opcode_nullmem = {
+	JMPZ: '0100 10',
+	JMPN: '0100 11',
+	JMPU: '0101 00',
+	CALL: '0101 01',
+};
+const opcode_regreg = {
+	ADD: '0000 0000 0001 ',
+	MOV: '0000 0000 0010 ',
+	AND: '0000 0000 0011 ',
+	OR: '0000 0000 0100 ',
+	XOR: '0000 0000 0101 ',
+};
+const opcode_nullreg = {
+	NOT: '0000 0000 0110 ',
+	INC: '0000 0000 0111 ',
+	CILR: '0000 0000 1000 ',
+	CILL: '0000 0000 1001 ',
+	SHR: '0000 0000 1010 ',
+	SHL: '0000 0000 1011 ',
+};
+const opcode_nullnull = {
+	RET: '0000 0000 1100 ',
+	CINT: '0000 0000 1101 ',
+	CMIF: '0000 0000 1110 ',
+	INPT: '0000 0000 1111 ',
+	OUTP: '0000 0001 0000 ',
+	CINF: '0000 0010 0000 ',
+	COUF: '0000 0011 0000 ',
+};
+
+const code_registers = { A: '01', B: '10', C: '11' };
 
 CodeMirror.defineMode('assembler', function () {
 	return {
@@ -95,6 +130,7 @@ $(document).ready(function () {
 	$('#translate-button').on('click', assemble);
 });
 
+//toggleActive is used for responsive navbar
 function toggleActive() {
 	activeNav = !activeNav;
 	if (activeNav) {
@@ -145,14 +181,17 @@ function assemble() {
 
 		//seperate instruction into tokens and call appropriate function
 		for (var i = 0; i < assemblyArr.length; i++) {
+			//spliting the line into tokens.
 			var instruction = assemblyArr[i].split(' ');
 			let j = 0;
+
+			//ignoring blank lines
+			//cleans individual instruction from trailing whitespaces
 			while (instruction[0][j] === '\n') {
 				++j;
 			}
-
 			instruction[0] = instruction[0].slice(j);
-			//cleans individual instruction from tailing whitespaces
+
 			if (instruction[0] === '') {
 				instruction.shift();
 			}
@@ -183,48 +222,19 @@ function assemble() {
 						1
 					);
 					machine += number + '\n';
-				} else if (
-					instruction[0] === 'ADD' ||
-					instruction[0] === 'MOV' ||
-					instruction[0] === 'AND' ||
-					instruction[0] === 'OR' ||
-					instruction[0] === 'XOR'
-				) {
+				} else if (keys_regreg.includes(instruction[0])) {
 					regreg(instruction);
 					continue;
-				} else if (
-					instruction[0] === 'NOT' ||
-					instruction[0] === 'INC' ||
-					instruction[0] === 'CILR' ||
-					instruction[0] === 'CILL' ||
-					instruction[0] === 'SHR' ||
-					instruction[0] === 'SHL'
-				) {
+				} else if (keys_nullreg.includes(instruction[0])) {
 					nullreg(instruction);
 					continue;
-				} else if (
-					instruction[0] === 'RET' ||
-					instruction[0] === 'CINT' ||
-					instruction[0] === 'CMIF' ||
-					instruction[0] === 'INPT' ||
-					instruction[0] === 'OUTP' ||
-					instruction[0] === 'CINF' ||
-					instruction[0] === 'COUF'
-				) {
+				} else if (keys_nullnull.includes(instruction[0])) {
 					nullnull(instruction);
 					continue;
-				} else if (
-					instruction[0] === 'LOAD' ||
-					instruction[0] === 'STORE'
-				) {
+				} else if (keys_regmem.includes(instruction[0])) {
 					regmem(instruction);
 					continue;
-				} else if (
-					instruction[0] === 'JMPZ' ||
-					instruction[0] === 'JMPN' ||
-					instruction[0] === 'JMPU' ||
-					instruction[0] === 'CALL'
-				) {
+				} else if (keys_nullmem.includes(instruction[0])) {
 					nullmem(instruction);
 					continue;
 				}
@@ -259,26 +269,8 @@ function regmem(instruction) {
 		instruction[2] = instruction[2].replace('$', '');
 	}
 
-	switch (instruction[0]) {
-		case 'LOAD':
-			machine += mode + '00 00';
-			break;
-		case 'STORE':
-			machine += mode + '00 01';
-			break;
-	}
-
-	switch (instruction[1]) {
-		case 'A':
-			machine += '01 ';
-			break;
-		case 'B':
-			machine += '10 ';
-			break;
-		case 'C':
-			machine += '11 ';
-			break;
-	}
+	machine += mode + opcode_regmem[instruction[0]];
+	machine += code_registers[instruction[1]] + ' ';
 
 	if (locationDictionary[instruction[2]] !== undefined) {
 		machine += numToBinary(locationDictionary[instruction[2]]);
@@ -292,20 +284,7 @@ function regmem(instruction) {
 
 //instruction has one memory(label) operand [control transfer]
 function nullmem(instruction) {
-	switch (instruction[0]) {
-		case 'JMPZ':
-			machine += '0100 10';
-			break;
-		case 'JMPN':
-			machine += '0100 11';
-			break;
-		case 'JMPU':
-			machine += '0101 00';
-			break;
-		case 'CALL':
-			machine += '0101 01';
-			break;
-	}
+	machine += opcode_nullmem[instruction[0]];
 	let location = locationDictionary[instruction[1]];
 
 	machine += '00 ';
@@ -316,111 +295,23 @@ function nullmem(instruction) {
 
 //instruction has two register operands [arithmetic and logical]
 function regreg(instruction) {
-	switch (instruction[0]) {
-		case 'ADD':
-			machine += '0000 0000 0001 ';
-			break;
-		case 'MOV':
-			machine += '0000 0000 0010 ';
-			break;
-		case 'AND':
-			machine += '0000 0000 0011 ';
-			break;
-		case 'OR':
-			machine += '0000 0000 0100 ';
-			break;
-		case 'XOR':
-			machine += '0000 0000 0101 ';
-			break;
-	}
-	switch (instruction[1]) {
-		case 'A':
-			machine += '01';
-			break;
-		case 'B':
-			machine += '10';
-			break;
-		case 'C':
-			machine += '11';
-			break;
-	}
-	switch (instruction[2]) {
-		case 'A':
-			machine += '01';
-			break;
-		case 'B':
-			machine += '10';
-			break;
-		case 'C':
-			machine += '11';
-			break;
-	}
+	machine += opcode_regreg[instruction[0]];
+	machine += code_registers[instruction[1]];
+	machine += code_registers[instruction[2]];
 	machine += '\n';
 }
 
 //instruction has one register operand
 function nullreg(instruction) {
-	switch (instruction[0]) {
-		case 'NOT':
-			machine += '0000 0000 0110 ';
-			break;
-		case 'INC':
-			machine += '0000 0000 0111 ';
-			break;
-		case 'CILR':
-			machine += '0000 0000 1000 ';
-			break;
-		case 'CILL':
-			machine += '0000 0000 1001 ';
-			break;
-		case 'SHR':
-			machine += '0000 0000 1010 ';
-			break;
-		case 'SHL':
-			machine += '0000 0000 1011 ';
-			break;
-	}
+	machine += opcode_nullreg[instruction[0]];
 	machine += '00';
-
-	switch (instruction[1]) {
-		case 'A':
-			machine += '01';
-			break;
-		case 'B':
-			machine += '10';
-			break;
-		case 'C':
-			machine += '11';
-			break;
-	}
+	machine += code_registers[instruction[1]];
 	machine += '\n';
 }
 
 //instruction has no operands [flag control/io]
 function nullnull(instruction) {
-	switch (instruction[0]) {
-		case 'RET':
-			machine += '0000 0000 1100 ';
-			break;
-		case 'CINT':
-			machine += '0000 0000 1101 ';
-			break;
-		case 'CMIF':
-			machine += '0000 0000 1110 ';
-			break;
-		case 'INPT':
-			machine += '0000 0000 1111 ';
-			break;
-		case 'OUTP':
-			machine += '0000 0001 0000 ';
-			break;
-		case 'CINF':
-			machine += '0000 0010 0000 ';
-			break;
-		case 'COUF':
-			machine += '0000 0011 0000 ';
-			break;
-	}
+	machine += opcode_nullnull[instruction[0]];
 	machine += '0000\n';
 }
 
