@@ -350,7 +350,7 @@ function validator(assemblyArr) {
 			error += `${i + 1}: Name expected`;
 			break;
 		}
-		if (operation ==='VAL' && isNaN(parseInt(instruction[2])){
+		if (operation ==='VAL' && isNaN(parseInt(instruction[2]))){
 			error += `${i+1}: Value expected`;
 		}
 
