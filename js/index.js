@@ -350,6 +350,9 @@ function validator(assemblyArr) {
 			error += `${i + 1}: Name expected`;
 			break;
 		}
+		if (operation ==='VAL' && instruction[2]===undefined){
+			error += `${i+1}: Value expected`;
+		}
 
 		//register memory
 		if (keys_regmem.includes(operation) && passNumber === 2) {
